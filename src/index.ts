@@ -3,12 +3,15 @@ import graphqlHTTP from "express-graphql";
 import { makeExecutableSchema } from "graphql-tools";
 import { importSchema } from "graphql-import";
 import { UserResolver } from './resolvers/user';
-import path from "path";
-const fs = require('fs');
-fs.readdir(path.resolve(__dirname, "models"), function (err: any, files: any) {
-  console.log(files);
+import { loadModels } from './utils';
+import path from 'path';
+
+const models = loadModels();
+let typeDefs = '';
+models.forEach(model => {
+  typeDefs += importSchema(path.resolve(__dirname, `models/${model}`));  
 })
-const typeDefs = importSchema(path.resolve(__dirname, "models/user.graphql"));
+
 
 const resolvers = {...new UserResolver().resolvers};
 
